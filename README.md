@@ -65,3 +65,8 @@ Common building blocks:
 - Header comment block: program name, description, connections (where relevant).
 - Every line carries an inline comment explaining the instruction.
 - An `Output:` comment block at the bottom states the expected result and final register/memory state.
+
+## License
+
+Distributed under the [MIT License](LICENSE).
+Contributions are expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
