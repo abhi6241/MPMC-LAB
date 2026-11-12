@@ -1,87 +1,72 @@
-/* Program      : Display text on a 16x2 LCD (8051)
- * Description  : Initializes an HD44780-style LCD in 8-bit mode,
- *                then shows "ECE-B" on line 1 and "MPMC-LAB" on
- *                line 2.
- * Connections  : LCD data bus  -> Port P2
- *                RS (register select) -> P3.0
- *                EN (enable)          -> P3.1
- *                (R/W tied to ground = write only)               */
+/* Program      : Display required characters on 16x2 LCD display (8051 C)
+ * Description  : HD44780-style LCD in 8-bit mode. Data bus on P2,
+ *                RS on P0.0, EN on P0.1. Clears the screen and shows
+ *                " ECE-B" forever.
+ * Compiler     : Keil C51
+ * Source       : Lab record, page 26
+ */
+#include <reg51.h>
 
-#include <reg51.h> /* SFR definitions for the 8051 (P2, etc.)  */
+#define LCD P2
+sbit RS = P0^0;
+sbit EN = P0^1;
 
-sbit RS = P3 ^ 0; /* RS = 0: command, RS = 1: data            */
-sbit EN = P3 ^ 1; /* EN: data latched on falling edge         */
-
-#define LCD P2 /* LCD data bus on port P2                  */
-
-/* Delay of about i milliseconds */
-void delay(unsigned int i)
+void delay(unsigned int t)
 {
-    unsigned int j;
-    while (i-- > 0) /* outer loop: i iterations      */
+    unsigned int i, j;
+    for (i = 0; i < t; i++) /* NOTE: record prints "j++" here */
     {
-        for (j = 0; j < 500; j++)
-            ; /* inner loop: ~1 ms busy wait   */
+        for (j = 0; j < 1275; j++)
+            ;
     }
 }
 
-/* Send a command byte to the LCD (RS = 0) */
 void cmd_lcd(unsigned char c)
 {
-    RS = 0;   /* select command register       */
-    LCD = c;  /* put command on the data bus   */
-    EN = 1;   /* pulse enable high...          */
-    delay(2); /* ...give the LCD time to read  */
-    EN = 0;   /* falling edge latches command  */
+    RS = 0;
+    LCD = c;
+    EN = 1; delay(2);
+    EN = 0;
 }
 
-/* Send a data byte (one character) to the LCD (RS = 1) */
-void write_lcd(unsigned char c)
+void write_LCD(unsigned char c)
 {
-    RS = 1;   /* select data register          */
-    LCD = c;  /* put character on the data bus */
-    EN = 1;   /* pulse enable high...          */
-    delay(2); /* ...give the LCD time to read  */
-    EN = 0;   /* falling edge latches char     */
+    EN = 1;
+    RS = 1;
+    LCD = c; delay(2);
+    EN = 0;
 }
 
-/* Initialize the LCD */
-void init_lcd()
-{
-    delay(10);     /* wait for LCD power-on ready   */
-    cmd_lcd(0x38); /* function set: 8-bit, 2 lines  */
-    cmd_lcd(0x0E); /* display on, cursor on         */
-    cmd_lcd(0x06); /* entry mode: auto-increment    */
-    cmd_lcd(0x01); /* clear display, home cursor    */
-}
-
-/* Write a null-terminated string to the LCD */
 void display(unsigned char *s)
 {
-    while (*s) /* until the end of the string   */
+    while (*s)
     {
-        write_lcd(*s++); /* send one character at a time  */
+        write_LCD(*s++);
     }
+}
+
+void init_lcd(void)
+{
+    delay(10);
+    cmd_lcd(0x38);
+    cmd_lcd(0x0E);
+    cmd_lcd(0x06);
+    cmd_lcd(0x01);
 }
 
 void main()
 {
-    init_lcd();          /* initialize LCD: 2 lines, display on  */
-
-    while (1)            /* keep refreshing the display forever  */
+    init_lcd();
+    while (1)
     {
-        cmd_lcd(0x01);   /* clear display and home the cursor    */
-        cmd_lcd(0x35);   /* (function-set / cursor command)      */
-        display("ECE-B");    /* print "ECE-B" on line 1           */
-        cmd_lcd(0xc3);   /* cursor to line 2, position 3         */
-        display("MPMC-LAB"); /* print "MPMC-LAB" on line 2        */
-        delay(500);      /* hold the display for ~500 ms         */
+        cmd_lcd(0x01);
+        cmd_lcd(0x80);
+        display(" ECE-B"); /* NOTE: the record first wrote
+                              display("ABCD") here and struck it
+                              out; final version shows " ECE-B" */
+        delay(5000);
     }
 }
 
-/* Output:
- * The 16x2 LCD shows:
- *   line 1: "ECE-B"     (starting at position 0)
- *   line 2: "   MPMC-LAB" (starting at position 3)
- * The screen is cleared and redrawn every ~500 ms (the while(1)
- * loop), so the text stays visible with a constant refresh.       */
+/* Output: LCD line 1 shows " ECE-B", cleared and refreshed every
+ * ~5 s. (Proteus screenshot in the record shows "ECE-B MPMC Lab_".) */

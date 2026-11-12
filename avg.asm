@@ -1,30 +1,25 @@
-; Program      : Average of 5 numbers
-; Description  : Reads 5 bytes stored from memory location 2000H
-;                and computes their average.
+; Program      : Find the average value of data at SI (8086)
+; Description  : Adds the five bytes stored from 2000H and divides the
+;                sum by 5 (DIV BL). Quotient in AL, remainder in AH.
+; Assembler    : 8086 (MASM/TASM syntax, run in DOSBox)
+; Source       : Lab record, page 14
 
-CODE SEGMENT
-    ASSUME CS: CODE
-START:
-    MOV SI, 2000H      ; SI points to first number at 2000H
-    MOV CL, 04H        ; loop counter: 4 more numbers to add
-    MOV AX, 0000H      ; initialize AX
-    MOV AX, [SI]       ; load first value from memory
-LOOP1:
-    INC SI             ; move pointer to next number
-    ADD AL, [SI]       ; add next number to sum in AL
-    DEC CL             ; decrement counter
-    JNZ LOOP1          ; repeat until all 4 numbers added
-    DIV BL             ; divide sum by count in BL
-    INT 03H            ; breakpoint: stop so result can be inspected
-CODE ENDS
-END START
+ASSUME CS:CODE       ; CS register points to segment named code
+CODE SEGMENT         ; CS definition starts
+START:               ; entry point of program
+    MOV AX, 0000H    ; loads 0000H (address) to AX
+    MOV SI, 2000H    ; loads 2000H to SI
+    MOV CL, 05H      ; loads 05H to CL
+    MOV BL, 05H      ; loads 05H to BL
+AVG:
+    ADD AL, [SI]     ; adds data at SI with AL and stores in AL
+    INC SI           ; increments SI by 1
+    DEC CL           ; decrements CL by 1
+    JNZ AVG          ; jumps, if not zero
+    DIV BL           ; divides AX with BL into AX
+    INT 03H          ; interrupts to terminate the program
+CODE ENDS            ; end of CS
+END START            ; end of program
 
-; Output:
-; Loop result: AL = sum of the 5 bytes at 2000H-2004H,
-;              AH = byte at 2001H (left over from MOV AX, [SI])
-; DIV BL  ->  BL is still 00H (never initialized), so this is a
-;             divide-by-zero: INT 0 (divide overflow) fires and the
-;             average is NOT produced.
-; NOTE: To get the intended output, set BL = 05H and clear AH
-;       before the divide (see avg_fixed.asm), giving:
-;       AL = average, AH = remainder
+; Input : 075A:2000 = 01 02 03 04 05
+; Output: AX = 0003H, BX = 0005H, DX = 0000H, SI = 2005H, CX = 0000H

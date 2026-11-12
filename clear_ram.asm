@@ -1,21 +1,15 @@
-; Program      : Clear a block of internal RAM (8051)
-; Description  : Fills 16 RAM locations starting at 60H with 00H,
-;                using indirect addressing.
-; Target range : 60H - 6FH
+; Program      : Clear 16-bit RAM locations starting at 60H (8051)
+; Description  : Clears 16 internal RAM locations from 60H to 6FH.
+; Source       : Lab record, page 18
 
-CLR A                ; A = 00H (value to be written)
-MOV R1, #60H         ; R1 = pointer to first location (60H)
-MOV R2, #16          ; counter: 16 locations to clear (10H)
-
+    CLR A            ; A = 00H
+    MOV R1, #60H     ; R1 points to first location
+    MOV R7, #16H     ; NOTE: record writes #16H for 16 locations
+                     ; (hex 10H); transcribed as printed
 AGAIN:
-    MOV @R1, A       ; write 00H to the location pointed by R1
-    INC R1           ; advance pointer to next location
-    DJNZ R2, AGAIN   ; decrement counter, repeat until all 16 cleared
+    MOV @R1, A       ; write 00H to location in R1
+    INC R1           ; next location
+    DJNZ R7, AGAIN   ; repeat for all locations
 
-; Output:
-; Internal RAM locations 60H-6FH are all cleared to 00H
-; Final state after execution:
-;   (60H) = (61H) = ... = (6FH) = 00H
-;   A  = 00H
-;   R1 = 70H (pointer one past the last location cleared)
-;   R2 = 00H (counter exhausted)
+; Input : [60H]-[6FH] = 05H (each of the 16 locations)
+; Output: [60H]-[6FH] = 00H (each of the 16 locations)

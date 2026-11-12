@@ -1,24 +1,23 @@
-; Program      : Divide a 16-bit number (8086)
-; Description  : Divides the 32-bit value in DX:AX by a 16-bit
-;                value using unsigned word divide. AX gets the
-;                quotient, DX gets the remainder.
-; Assembler    : 8086 (MASM/TASM syntax)
+; Program      : Divide two 16-bit numbers (8086)
+; Description  : 16-bit division. Loads 5345H into AX and 2356H into
+;                BX, then divides AX by BX (DIV BX).
+; Assembler    : 8086 (MASM/TASM syntax, run in DOSBox)
+; Source       : Lab record, page 10
 
-ASSUME CS:CODE
-CODE SEGMENT
-START:
-    MOV DX, 0001H      ; DX = high word of dividend
-    MOV AX, 0000H      ; AX = low word -> DX:AX = 00010000H (65536)
-    MOV BX, 0010H      ; BX = divisor 0010H (16 decimal)
-    DIV BX             ; AX = DX:AX / BX, DX = remainder
-    INT 03H            ; breakpoint: stop so result can be inspected
-CODE ENDS
-END START
+ASSUME CS:CODE       ; CS register points to segment named code
+CODE SEGMENT         ; start of CS definition
+START:               ; entry point of program
+    MOV AX, 5345H    ; loads 5345H into AX
+    MOV BX, 2356H    ; loads 2356H into BX
+    DIV BX           ; BX divides AX (quotient -> AX, remainder -> DX)
+    INT 03H          ; interrupts to terminate / debug the program
+CODE ENDS            ; end of CS
+END START            ; specifies end of program
 
+; Input:
+;   AX <- 5345H
+;   BX <- 2356H
 ; Output:
-;   AX = 1000H  (quotient: 65536 / 16 = 4096)
-;   DX = 0000H  (remainder: 65536 mod 16 = 0)
-;   BX = 0010H  (unchanged, holds the divisor)
-; NOTE: DX must hold the high word of the dividend (here 0000H)
-;       before DIV, otherwise it corrupts the dividend.
-; Program stops at INT 03H for inspection.
+;   AX = 0002H
+;   BX = 2356H
+;   DX = 089DH

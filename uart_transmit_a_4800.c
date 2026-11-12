@@ -1,24 +1,24 @@
-/* Program      : Transmit character 'A' continuously (8051)
- * Description  : UART transmission at 4800 baud, 8-bit data.
- * Clock        : 11.0592 MHz crystal; Timer 1 mode 2.
+/* Program      : Transfer letter 'A' serially at 4800 baud, 8-bit data, 1 stop bit (8051 C)
+ * Description  : Timer 1 mode 2 at TH1 = 0xFA sets the 4800 baud rate;
+ *                SCON = 0x50 selects 8-bit UART, REN enabled.
  * Compiler     : Keil C51
+ * Source       : Lab record, page 21
  */
 #include <reg51.h>
 
-void main(void)
+void main()
 {
-    TMOD = 0x20; /* Timer 1, mode 2 (8-bit auto-reload) */
-    TH1 = 0xFA;  /* Reload value for 4800 baud */
-    SCON = 0x50; /* Serial mode 1, 8-bit UART */
-    TR1 = 1;     /* Start Timer 1 */
-
+    TMOD = 0x20;
+    TH1 = 0xFA;
+    SCON = 0x50;
+    TR1 = 1;
     while (1)
     {
-        SBUF = 'A';       /* Load character */
-        while (TI == 0)   /* Wait for transmission */
+        SBUF = 'A';
+        while (TI == 0)
             ;
-        TI = 0;           /* Clear transmit flag */
+        TI = 0;
     }
 }
 
-/* Output: Terminal repeatedly receives A at 4800 baud. */
+/* Output: Serial window (UART): AAAA .... continuously. */

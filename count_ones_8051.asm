@@ -1,16 +1,17 @@
-; Program: Count the number of 1 bits in a byte (8051)
-; Input byte at 40H; count stored at 41H.
-            ORG 0000H
-            MOV A, 40H       ; Load input byte
-            MOV R2, #08H     ; Examine eight bits
-            MOV R3, #00H     ; Clear count
-COUNT:      RRC A            ; Rotate bit 0 into carry
-            JNC NEXT         ; Skip if bit was zero
-            INC R3           ; Count set bit
-NEXT:       DJNZ R2, COUNT   ; Repeat eight times
-            MOV 41H, R3      ; Store count
-STOP:       SJMP STOP        ; Stop for inspection
-            END
+; Program      : No. of 1's in a byte (8051)
+; Description  : Counts the set bits of the byte at 40H by rotating
+;                through the carry; count is kept in R2.
+; Source       : Lab record, page 17
 
-; Output: [41H] = number of set bits in [40H].
-; Example 13H (00010011B) produces 03H.
+    MOV A, 40H       ; load the byte
+    MOV R1, #08H     ; examine eight bits
+    MOV R2, #00H     ; clear count
+L2:
+    RLC A            ; rotate next bit into carry
+    JNC L1           ; skip if bit was zero
+    INC R2           ; count set bit
+L1:
+    DJNZ R1, L2      ; repeat eight times
+
+; Input : [40H] = 96H
+; Output: R2 = 04H (number of 1's), A = 4BH (rotated byte)

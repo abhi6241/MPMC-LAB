@@ -1,34 +1,32 @@
-/* Program      : Generate a sine wave using an 8-bit DAC (8051)
- * Connections  : DAC data input connected to port P1.
+/* Program      : Generate sine wave using lookup table (8051 C)
+ * Connections  : DAC data input on port P1.
  * Compiler     : Keil C51
+ * Source       : Lab record, page 27 (c)
  */
 #include <reg51.h>
-#define DAC P1
 
-/* Lookup table follows the sample values in the lab record. */
-unsigned char code sine_table[12] = {
-    128, 192, 228, 255, 238, 192,
-    128, 64, 17, 0, 17, 64
-};
-
-void delay(void)
+void delay()
 {
     unsigned int i;
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 500; i++)
         ;
 }
 
-void main(void)
+void main()
 {
-    unsigned char i;
+    /* NOTE: record declares wave[12] but lists only 11 values;
+     * transcribed as printed (wave[11] stays 0). */
+    unsigned char wave[12] = {128, 192, 238, 255, 192, 128,
+                              64, 17, 0, 17, 64};
+    unsigned char x;
     while (1)
     {
-        for (i = 0; i < 12; i++)
+        for (x = 0; x < 12; x++)
         {
-            DAC = sine_table[i]; /* Output next sample */
+            P1 = wave[x];
             delay();
         }
     }
 }
 
-/* Output: Repeating sine-like waveform at DAC output. */
+/* Output: Repeating sine-like waveform at the DAC output (P1). */

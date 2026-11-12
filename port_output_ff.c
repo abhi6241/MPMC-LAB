@@ -1,15 +1,15 @@
-/* Program      : Send FFH to port P1 (8051)
- * Description  : Continuously writes all logic 1s to port P1.
+/* Program      : Send 00-FF to port 1 (8051 C)
+ * Description  : Writes the values 00H through FFH to port P1.
  * Compiler     : Keil C51
+ * Source       : Lab record, page 19
  */
 #include <reg51.h>
 
-void main(void)
+void main()
 {
-    while (1)
-    {
-        P1 = 0xFF; /* Set all eight P1 pins high */
-    }
+    unsigned char c;
+    for (c = 0; c <= 255; c++) /* NOTE: always true for unsigned char */
+        P1 = c;
 }
 
-/* Output: P1 = FFH (all eight port pins are high). */
+/* Output: The values of 00 to FF sent to port 1. */

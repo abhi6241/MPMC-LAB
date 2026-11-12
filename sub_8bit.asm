@@ -1,19 +1,23 @@
 ; Program      : Subtract two 8-bit numbers (8086)
-; Description  : Subtracts two immediate values, 42H from 48H,
-;                keeping the difference in register BL.
-; Assembler    : 8086 (MASM/TASM syntax)
+; Description  : 8-bit subtraction. Loads 72H into AL and 41H into BL,
+;                then subtracts BL from AL.
+; Assembler    : 8086 (MASM/TASM syntax, run in DOSBox)
+; Source       : Lab record, page 04
 
-ASSUME CS:CODE
-CODE SEGMENT
-START:
-    MOV AL, 48H        ; AL = first number 48H
-    MOV BL, 42H        ; BL = second number 42H
-    SUB BL, AL         ; BL = AL - BL (difference)
-    INT 03H            ; breakpoint: stop so result can be inspected
-CODE ENDS
-END START
+ASSUME CS:CODE       ; CS register points to segment named code
+CODE SEGMENT         ; start of code segment registers
+START:               ; entry point of program
+    MOV AL, 72H      ; loads value 72H into AL
+    MOV BL, 41H      ; loads value 41H into BL
+    SUB AL, BL       ; subtracts BL from AL value
+    INT 03H          ; interrupts to terminate / debug the program
+CODE ENDS            ; end of code segment
+END STARTS           ; NOTE: record writes "END STARTS"; the entry
+                     ; point label defined above is START
 
+; Input:
+;   AL <- 72H
+;   BL <- 41H
 ; Output:
-;   BL = 06H  (48H - 42H = 06H)
-;   AL = 48H  (unchanged, holds the minuend)
-; Program stops at INT 03H for inspection.
+;   AX = FF31H  (AL = 72H - 41H = 31H)
+;   BX = 0041H

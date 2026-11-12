@@ -1,19 +1,23 @@
 ; Program      : Add two 16-bit numbers (8086)
-; Description  : Adds two immediate values, 2222H and 1111H,
-;                keeping the sum in register AX.
-; Assembler    : 8086 (MASM/TASM syntax)
+; Description  : 16-bit addition. Loads 4326H into AX and 1012H into
+;                BX, then adds BX into AX.
+; Assembler    : 8086 (MASM/TASM syntax, run in DOSBox)
+; Source       : Lab record, page 07
 
-ASSUME CS:CODE
-CODE SEGMENT
-START:
-    MOV AX, 2222H      ; AX = first number 2222H
-    MOV BX, 1111H      ; BX = second number 1111H
-    ADD AX, BX         ; AX = AX + BX (sum)
-    INT 03H            ; breakpoint: stop so result can be inspected
-CODE ENDS
-END START
+ASSUME CS:CODE       ; CS register points to segment named code
+CODE SEGMENT         ; CS definition starts
+START:               ; entry point of program
+    MOV AX, 4326H    ; loads 4326H into AX
+    MOV BX, 1012H    ; loads 1012H into BX
+    ADD AX, BX       ; adds BX into AX
+    INT 03H          ; interrupts to terminate / debug the program
+CODE ENDS            ; end of CS
+END STARTS           ; NOTE: record writes "END STARTS"; the entry
+                     ; point label defined above is START
 
+; Input:
+;   AX <- 4326H
+;   BX <- 1012H
 ; Output:
-;   AX = 3333H  (2222H + 1111H = 3333H)
-;   BX = 1111H  (unchanged, holds the second number)
-; Program stops at INT 03H for inspection.
+;   AX = 5338H
+;   BX = 1012H

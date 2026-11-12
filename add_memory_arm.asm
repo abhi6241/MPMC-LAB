@@ -1,26 +1,20 @@
-; Program      : Add two 32-bit numbers in memory (ARM)
-; Description  : Loads two words from memory locations
-;                0x20000000 and 0x20000010, adds them, and
-;                stores the result at 0x200000FF.
-; Assembler    : ARM (Keil/ARMCC syntax, AREA directive)
+; Program      : Add two numbers stored in memory (ARM)
+; Description  : Adds the words at 0x20000000 and 0x20000010 and
+;                stores the sum at 0x200000FF.
+; Assembler    : ARM Keil armasm syntax
+; Source       : Lab record, page 31 (ARM program 2)
 
-        AREA P2, CODE, READONLY   ; code section named P2
-        EXPORT MYAPP              ; make entry point visible
-MYAPP   LDR R0, =0x20000000       ; R0 = address of first number
-        LDR R1, [R0]              ; R1 = first number from memory
-        LDR R2, =0x20000010       ; R2 = address of second number
-        LDR R3, [R2]              ; R3 = second number from memory
-        ADD R4, R1, R3            ; R4 = first + second number
-        LDR R5, =0x200000ff       ; R5 = result address
-        STR R4, [R5]              ; store sum at 0x200000FF
-HERE    B HERE                    ; infinite loop: stay here
+        AREA P2, CODE, READONLY
+        LDR R0, =0x20000000
+        LDR R1, [R0]             ; R1 = [0x20000000]
+        LDR R2, =0x20000010
+        LDR R3, [R2]             ; R3 = [0x20000010]
+        ADD R4, R1, R3           ; R4 = R1 + R3
+        LDR R5, =0x200000FF
+        STR R4, [R5]             ; [0x200000FF] = R4
+HERE    B HERE                   ; stop for register inspection
         END
 
-; Output:
-; The 32-bit word at 0x20000000 is added to the 32-bit word at
-; 0x20000010, and the sum is stored at 0x200000FF.
-; Example: if (0x20000000) = 00000005H and (0x20000010) = 0000000AH,
-;          then (0x200000FF) = 0000000FH (5 + 10 = 15).
-; Register state after execution:
-;   R1 = first number, R3 = second number, R4 = sum, R5 = 0x200000FF
-; PC then loops forever at HERE.
+; Input : [0x20000000] = 0x04030201, [0x20000010] = 0x05040302
+; Output: R1 = 0x04030201, R3 = 0x05040302, R4 = 0x09070503,
+;         R5 = 0x200000FF

@@ -1,21 +1,24 @@
 ; Program      : Multiply two 16-bit numbers (8086)
-; Description  : Multiplies two immediate values, 1234H and 5678H,
-;                using unsigned word multiply. The 32-bit product
-;                ends up in DX:AX (DX = high word, AX = low word).
-; Assembler    : 8086 (MASM/TASM syntax)
+; Description  : 16-bit multiplication. Loads 1329H into AX and 3715H
+;                into BX, then multiplies BX with AX (MUL BX).
+; Assembler    : 8086 (MASM/TASM syntax, run in DOSBox)
+; Source       : Lab record, page 09
 
-ASSUME CS:CODE
-CODE SEGMENT
-START:
-    MOV AX, 1234H      ; AX = multiplicand 1234H
-    MOV BX, 5678H      ; BX = multiplier 5678H
-    MUL BX             ; DX:AX = AX * BX (32-bit product)
-    INT 03H            ; breakpoint: stop so result can be inspected
-CODE ENDS
-END START
+ASSUME CS:CODE       ; CS register points to segment named code
+CODE SEGMENT         ; CS definition start
+START:               ; entry point of program
+    MOV AX, 1329H    ; loads 1329H into AX
+    MOV BX, 3715H    ; loads 3715H into BX
+    MUL BX           ; multiplies BX with AX (product -> DX:AX)
+    INT 03H          ; interrupts to terminate / debug the program
+CODE ENDS            ; end of CS
+END START            ; specifies end of program
 
+; Input:
+;   AX <- 1329H
+;   BX <- 3715H
 ; Output:
-;   DX = 0626H (high word), AX = 0060H (low word)
-;   i.e. 1234H * 5678H = 06260060H (4660 * 22136 = 103,153,760)
-;   BX = 5678H (unchanged, holds the multiplier)
-; Program stops at INT 03H for inspection.
+;   AX = 4A9DH
+;   BX = 3715H
+;   DX = 0043H
+;   DX:AX = 0043 4A9D H

@@ -1,21 +1,24 @@
-; Program: Add corresponding elements of an array (8086)
-; Adds five bytes beginning at 2000H. Sum is returned in AX.
-CODE SEGMENT
-    ASSUME CS:CODE
-START:
-    MOV SI, 2000H      ; Point to first array element
-    MOV AX, 0000H      ; Clear 16-bit sum
-    MOV AL, [SI]       ; Load first byte
-    MOV CL, 04H        ; Four more elements
-LOOP1:
-    INC SI             ; Next element
-    ADD AL, [SI]       ; Add byte to low sum
-    ADC AH, 00H        ; Propagate carry to high byte
-    DEC CL             ; Decrement count
-    JNZ LOOP1          ; Repeat until all elements are added
-    INT 03H            ; Stop for result inspection
-CODE ENDS
-END START
+; Program      : Multibyte addition (8086)
+; Description  : Adds the five bytes stored from 2000H; the sum is
+;                kept in AL (AX low byte).
+; Assembler    : 8086 (MASM/TASM syntax, run in DOSBox)
+; Source       : Lab record, page 13
 
-; Output: AX = sum of bytes at 2000H-2004H.
-; Example 01H,02H,03H,04H,05H -> AX = 000FH.
+ASSUME CS:CODE       ; CS register points to segment named code
+CODE SEGMENT         ; CS definition starts
+START:               ; entry point of program
+    MOV AX, 0000H    ; loads 0000H to AX
+    MOV SI, 2000H    ; loads 2000H to SI
+    MOV CL, 05H      ; loads 05H to CL
+LOOP1:
+    ADD AL, [SI]     ; adds data at SI into AL
+    INC SI           ; increment of SI by 1
+    DEC CL           ; decrement of CL by 1
+    JNZ LOOP1        ; jumps to LOOP1, if not zero
+    INT 03H          ; interrupts to terminate the program
+CODE ENDS            ; CS ends
+END STARTS           ; NOTE: record writes "END STARTS"; the entry
+                     ; point label defined above is START
+
+; Input : 075A:2000 = 01 02 03 04 05
+; Output: AX = 000FH, SI = 2005H, CX = 0000H

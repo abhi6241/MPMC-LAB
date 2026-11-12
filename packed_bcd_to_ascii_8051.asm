@@ -1,16 +1,20 @@
-; Program: Convert packed BCD to ASCII (8051)
-; Packed BCD input at 40H; tens and units ASCII at 50H and 51H.
-            ORG 0000H
-            MOV A, 40H       ; Read packed BCD byte
-            ANL A, #0F0H     ; Isolate tens nibble
-            SWAP A           ; Move tens digit to low nibble
-            ADD A, #30H      ; Convert digit to ASCII
-            MOV 50H, A       ; Store tens ASCII
-            MOV A, 40H       ; Read packed BCD again
-            ANL A, #0FH      ; Isolate units nibble
-            ADD A, #30H      ; Convert digit to ASCII
-            MOV 51H, A       ; Store units ASCII
-STOP:       SJMP STOP        ; Stop for inspection
-            END
+; Program      : Packed BCD to 2 ASCII & place them in R2 & R6 (8051)
+; Description  : Converts the packed BCD value 29H into its two ASCII
+;                digits: R6 = lower digit, R2 = upper digit.
+; Source       : Lab record, page 18
 
-; Example: 69H -> [50H]=36H ('6'), [51H]=39H ('9').
+    MOV A, #29H      ; packed BCD 29H
+    MOV R2, A        ; keep a copy in R2
+                     ; NOTE: a crossed-out MOV line appears in the
+                     ; record here; it is omitted.
+    ANL A, #0FH      ; mask lower nibble
+    ORL A, #30H      ; convert to ASCII
+    MOV R6, A        ; lower ASCII digit
+    MOV A, R2
+    ANL A, #0F0H     ; mask upper nibble
+    SWAP A           ; bring it to the lower nibble
+    ORL A, #30H      ; convert to ASCII
+    MOV R2, A        ; upper ASCII digit
+
+; Input : A = 29H (packed BCD)
+; Output: R2 = 32H ('2'), R6 = 39H ('9')
