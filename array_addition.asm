@@ -1,25 +1,21 @@
-; Program      : Add corresponding elements of an array (8086)
-; Description  : Adds five byte elements beginning at 2000H.
-;                The 16-bit sum is returned in AX.
-; Assembler    : 8086 (MASM/TASM syntax)
-
+; Program: Add corresponding elements of an array (8086)
+; Adds five bytes beginning at 2000H. Sum is returned in AX.
 CODE SEGMENT
     ASSUME CS:CODE
 START:
-    MOV SI, 2000H      ; SI points to the first array element
-    MOV AX, 0000H      ; clear the 16-bit accumulator
-    MOV AL, [SI]       ; load the first element
-    MOV CL, 04H        ; four elements remain
+    MOV SI, 2000H      ; Point to first array element
+    MOV AX, 0000H      ; Clear 16-bit sum
+    MOV AL, [SI]       ; Load first byte
+    MOV CL, 04H        ; Four more elements
 LOOP1:
-    INC SI             ; point to the next element
-    ADD AL, [SI]       ; add the next byte to the low byte
-    ADC AH, 00H        ; propagate carry into the high byte
-    DEC CL             ; decrement remaining-element count
-    JNZ LOOP1          ; repeat until all five elements are added
-    INT 03H            ; breakpoint for result inspection
+    INC SI             ; Next element
+    ADD AL, [SI]       ; Add byte to low sum
+    ADC AH, 00H        ; Propagate carry to high byte
+    DEC CL             ; Decrement count
+    JNZ LOOP1          ; Repeat until all elements are added
+    INT 03H            ; Stop for result inspection
 CODE ENDS
 END START
 
-; Output:
-; AX contains the sum of bytes at 2000H through 2004H.
-; Example values 01H, 02H, 03H, 04H, 05H produce AX = 000FH.
+; Output: AX = sum of bytes at 2000H-2004H.
+; Example 01H,02H,03H,04H,05H -> AX = 000FH.

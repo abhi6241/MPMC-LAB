@@ -1,27 +1,24 @@
-; Program      : Average of five array elements (8086)
-; Description  : Adds five bytes at 2000H-2004H and divides by 5.
-;                Quotient is returned in AL and remainder in AH.
-; Assembler    : 8086 (MASM/TASM syntax)
-
+; Program: Average of five array elements (8086)
+; Adds five bytes at 2000H-2004H and divides the sum by 5.
+; Quotient is returned in AL and remainder in AH.
 CODE SEGMENT
     ASSUME CS:CODE
 START:
-    MOV SI, 2000H      ; SI points to the first array element
-    MOV AX, 0000H      ; clear the 16-bit dividend
-    MOV AL, [SI]       ; load the first element
-    MOV CL, 04H        ; four more elements remain
+    MOV SI, 2000H      ; Point to first element
+    MOV AX, 0000H      ; Clear 16-bit dividend
+    MOV AL, [SI]       ; Load first byte
+    MOV CL, 04H        ; Four more elements
 LOOP1:
-    INC SI             ; point to the next array element
-    ADD AL, [SI]       ; add the next byte
-    ADC AH, 00H        ; include carry in the high byte
-    DEC CL             ; decrement counter
-    JNZ LOOP1          ; repeat for all five elements
-    MOV BL, 05H        ; divisor = number of array elements
+    INC SI             ; Point to next element
+    ADD AL, [SI]       ; Add next byte
+    ADC AH, 00H        ; Include carry in high byte
+    DEC CL             ; Decrement counter
+    JNZ LOOP1          ; Repeat five-element sum
+    MOV BL, 05H        ; Divisor = 5
     DIV BL             ; AX / BL: quotient AL, remainder AH
-    INT 03H            ; breakpoint for result inspection
+    INT 03H            ; Stop for inspection
 CODE ENDS
 END START
 
-; Output:
-; AL = integer average; AH = remainder after division by 5.
-; Example 1, 2, 3, 4, 5: AL = 03H and AH = 00H.
+; Output: AL = integer average, AH = remainder.
+; Example 1,2,3,4,5 -> AL = 03H, AH = 00H.

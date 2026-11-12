@@ -1,21 +1,16 @@
-; Program      : Convert packed BCD digits to ASCII (8051)
-; Description  : Converts the two nibbles of packed BCD at 40H.
-; Assembler    : 8051 Keil A51
-; Output       : Tens ASCII at 50H, units ASCII at 51H.
-
+; Program: Convert packed BCD to ASCII (8051)
+; Packed BCD input at 40H; tens and units ASCII at 50H and 51H.
             ORG 0000H
-            MOV A, 40H       ; read packed BCD byte
-            ANL A, #0F0H     ; isolate tens nibble
-            SWAP A           ; move tens digit to low nibble
-            ADD A, #30H      ; convert digit to ASCII
-            MOV 50H, A       ; store tens ASCII character
-
-            MOV A, 40H       ; read packed BCD byte again
-            ANL A, #0FH      ; isolate units nibble
-            ADD A, #30H      ; convert digit to ASCII
-            MOV 51H, A       ; store units ASCII character
-STOP:       SJMP STOP        ; stop here for inspection
+            MOV A, 40H       ; Read packed BCD byte
+            ANL A, #0F0H     ; Isolate tens nibble
+            SWAP A           ; Move tens digit to low nibble
+            ADD A, #30H      ; Convert digit to ASCII
+            MOV 50H, A       ; Store tens ASCII
+            MOV A, 40H       ; Read packed BCD again
+            ANL A, #0FH      ; Isolate units nibble
+            ADD A, #30H      ; Convert digit to ASCII
+            MOV 51H, A       ; Store units ASCII
+STOP:       SJMP STOP        ; Stop for inspection
             END
 
-; Example: [40H] = 69H gives [50H] = 36H ('6'),
-; [51H] = 39H ('9').
+; Example: 69H -> [50H]=36H ('6'), [51H]=39H ('9').
